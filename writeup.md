@@ -95,3 +95,18 @@ on speedup which, given we have 32 SMT threads on this machine, that means we
 are achieving full saturation of all SMT threads. Any additional threads working
 on the problem subtract from the runtime speedup due to oversaturation of the
 CPU cores/threads.
+
+## Problem 2
+
+![](./prog2_vecintrin/data.csv.png)
+
+The vector utilization % decreases as we increase the vector width. This makes
+sense intuitively that as you increase the vector size there would be more need
+for masking more elements. For example, each iteration of the exponentiation
+loop uses operations like vgt, vmult, and vsub, all of which are being masked
+based on their exponent values. The amount of total vector lanes is approx the
+max(exp) for the vector times the vector width, whereas the utilized lanes is
+the sum(exp). Thus the smaller the vector width, the fewer wasted lanes.
+
+Additionally, when you have a N value that is not evenly divisible by the vector
+width you will have additional wasted lanes but these are less significant.
