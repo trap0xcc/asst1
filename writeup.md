@@ -110,3 +110,24 @@ the sum(exp). Thus the smaller the vector width, the fewer wasted lanes.
 
 Additionally, when you have a N value that is not evenly divisible by the vector
 width you will have additional wasted lanes but these are less significant.
+
+### Extra Credit
+
+I was able to solve this using hadd and interleave, however I wasn't able to get
+down to the runtime suggested:
+
+```math
+\frac{N}{VECTOR\_WIDTH} + \ln\left(VECTOR\_WIDTH\right)
+```
+
+Instead my runtime was:
+
+```math
+\frac{N}{VECTOR\_WIDTH}\cdot\ln\left(VECTOR\_WIDTH\right)
+```
+
+I can only assume this was a typo but after thinking about it for far too long I
+wasn't able to get the runtime below this. Still, my solution is a decent
+constant factor improvement from O(N). I consulted AI on this problem after
+thinking about it and it confirmed my suspicion about not being able to reduce
+the runtime lower. It may be possible, but I don't see it.

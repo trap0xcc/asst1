@@ -314,18 +314,56 @@ float arraySumSerial(float *values, int N) {
   return sum;
 }
 
-// returns the sum of all elements in values
-// You can assume N is a multiple of VECTOR_WIDTH
-// You can assume VECTOR_WIDTH is a power of 2
 float arraySumVector(float *values, int N) {
+  assert(N % VECTOR_WIDTH == 0);
+  const auto exp = std::log2(VECTOR_WIDTH);
+  assert(std::floor(exp) == exp);
 
-  //
-  // CS149 STUDENTS TODO: Implement your vectorized version of arraySumSerial
-  // here
-  //
+  static auto all_ones_mask = _cs149_init_ones(VECTOR_WIDTH);
 
+  auto acc = 0.f;
   for (int i = 0; i < N; i += VECTOR_WIDTH) {
+    __cs149_vec_float vec1, vec2;
+    auto curr = &vec1;
+    auto next = &vec2;
+    _cs149_vload_float(*curr, values + i, all_ones_mask);
+    for (int j = 0; j < exp; j++) {
+      _cs149_hadd_float(*curr, *curr);
+      if (j != exp - 1) {
+        _cs149_interleave_float(*next, *curr);
+        auto tmp = curr;
+        curr = next;
+        next = tmp;
+      }
+    }
+    acc += curr->value[0];
   }
 
-  return 0.0;
+  return acc;
 }
+
+/*
+exp 1
+2 [1, 3]
+
+h [4, 4]
+  4
+
+exp 2
+4 [1, 3, 2, 5]
+
+h [4, 4, 7, 7]
+i [4, 7, 4, 7]
+h [11, 11, 11, 11]
+  11
+
+exp 3
+8 [1, 3, 2, 5, 4, 6, 7, 8]
+
+h [4, 4, 7, 7, 10, 10, 15, 15]
+i [4, 10, 4, 10, 7, 15, 7, 15]
+h [14, 14, 14, 14, 22, 22, 22, 22]
+i [14, 22, 14, 22, 14, 22, 14, 22]
+h [36, 36, 36, 36, 36, 36, 36, 36]
+  36
+*/

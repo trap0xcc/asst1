@@ -1,5 +1,3 @@
-CXXFLAGS += -DVECTOR_WIDTH=4
-
 all: myexp test
 
 logger.o: logger.cpp logger.h CS149intrin.h CS149intrin.cpp
