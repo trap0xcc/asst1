@@ -131,3 +131,58 @@ wasn't able to get the runtime below this. Still, my solution is a decent
 constant factor improvement from O(N). I consulted AI on this problem after
 thinking about it and it confirmed my suspicion about not being able to reduce
 the runtime lower. It may be possible, but I don't see it.
+
+## Problem 3
+
+### Part 1
+
+Given we are using 8-wide SIMD vectors to compute the set, a naive estimate of a
+speedup would be 8x compared with a completely serial, single-threaded approach.
+However, each pixel in a vector can take a variable amount of time to compute,
+and all pixels in a vector need to wait for the slowest pixel to finish. This
+will reduce the performance gained from parallel execution.
+
+### Part 2
+
+View one has a speedup of 8.18x over the serial version which is about 2x the
+speedup of the regular ISPC without tasks.
+
+```
+$ ./mandelbrot_ispc --tasks
+[mandelbrot serial]:		[118.881] ms
+Wrote image file mandelbrot-serial.ppm
+[mandelbrot ispc]:		[27.943] ms
+Wrote image file mandelbrot-ispc.ppm
+[mandelbrot multicore ispc]:	[14.536] ms
+Wrote image file mandelbrot-task-ispc.ppm
+				(4.25x speedup from ISPC)
+				(8.18x speedup from task ISPC)
+```
+
+I was able to get over a 70x speedup by using AVX512 up to 32 tasks.
+
+![](./prog3_mandelbrot_ispc/data.csv.png)
+
+Any more than that and I got inconsistent results both in performance and
+correctness. The correctness issues caused concern but seemed to not appear up
+to 32 tasks. My machine has 16 cores, each with 2 SMT threads, so it makes sence
+that performance would not improve beyond the use of 32 tasks. I was impressed
+that SMT allowed for linear performance gains past 16 tasks for my 16 cores. I
+was under the impression that threads that use SIMD heavily competete with each
+other for SIMD resources when colocated on the same core via SMT, but that
+didn't appear to be the case here.
+
+### Extra Credit
+
+The thread abstraction in program 1 and the ISPC tasks abstraction differ in a
+few significant ways:
+
+1. The ISPC tasks are able to leverage the SIMD/foreach to extract more data
+   level parallelism.
+2. My surface level understanding is that ISPC manages a pool of threads for
+   scheduling tasks onto vs manually creating threads. This means creating 10k
+   tasks will not cause resource issues that you will see from the OS when
+   creating 10k threads.
+3. The task abstraction could in principle be implemented outside of using OS
+   threads since it is only specifying what functions, with what arguments
+   should be executed concurrently.
