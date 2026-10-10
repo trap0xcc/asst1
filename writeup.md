@@ -186,3 +186,45 @@ few significant ways:
 3. The task abstraction could in principle be implemented outside of using OS
    threads since it is only specifying what functions, with what arguments
    should be executed concurrently.
+
+## Problem 4
+
+1. 4.78x speedup from SIMD parallelization, 110.75x speedup from SIMD and
+   multi-core parallelization. 23.17x speedup from just multi-core
+   parallelization.
+2. By changing the input values to 2.99, the resulting speedup was observed:
+
+```
+[sqrt serial]:		[828.343] ms
+[sqrt ispc]:		[120.718] ms
+[sqrt task ispc]:	[7.849] ms
+				(6.86x speedup from ISPC)
+				(105.53x speedup from task ISPC)
+```
+
+This improved SIMD speedup over serial. Speedup from multi-core alone was made
+worse. This is likely due to higher convergence with the static input where all
+SIMD operations complete at the same time and don't need to be masked off.
+3. I changed the input to have one value for each 8 wide SIMD vector to be 2.99
+   and all of the rest to be 1:
+
+```
+[sqrt serial]:		[150.465] ms
+[sqrt ispc]:		[172.713] ms
+[sqrt task ispc]:	[10.104] ms
+				(0.87x speedup from ISPC)
+				(14.89x speedup from task ISPC)
+```
+
+This dramatically reduced the performance improvement from SIMD alone since the
+data set is highly divergent. The serial process can make more progress on the
+small set of iterations compared to the SIMD instructions which are required to
+do the maximum iterations for all elements of the vector.
+
+### Extra Credit
+
+(skip)
+
+## Problem 5
+
+
