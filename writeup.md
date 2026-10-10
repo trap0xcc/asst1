@@ -227,4 +227,27 @@ do the maximum iterations for all elements of the vector.
 
 ## Problem 5
 
+1.
+
+```
+[saxpy ispc]:		[6.405] ms	[46.526] GB/s	[6.245] GFLOPS
+[saxpy task ispc]:	[2.377] ms	[125.376] GB/s	[16.828] GFLOPS
+				(2.69x speedup from use of tasks)
+```
+
+2.69x speedup from using tasks. This program is embarrassingly parallel with low
+arithmetic intensity. Since the math is super fast and trivial to compute, most
+time is going to be spent transferring data so memory bandwidth will be the
+bottleneck. I measured the memory bandwidth of my machine and the total
+theoretical bandwidth appears to be 256 GB/s, however in benchmarking, the total
+is around 112 GB/s depending on the workload. Therefore, I don't believe the
+performance of the task ispc version can be substantially improved without
+hardware changes to allow for more memory bandwidth.
+
+2. (AI assisted) The writes to areas of memory that are not in the cache create
+   a Read For Ownership transaction. This accounts for the additional read
+   bandwidth.
+3. (skip)
+
+## Problem 6
 

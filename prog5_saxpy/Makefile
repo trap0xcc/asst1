@@ -20,7 +20,13 @@ dirs:
 		/bin/mkdir -p $(OBJDIR)/
 
 clean:
-		/bin/rm -rf $(OBJDIR) *.ppm *~ $(APP_NAME)
+		/bin/rm -rf $(OBJDIR) *.ppm *~ $(APP_NAME) stream
+
+stream: stream.c
+		$(CC) -O3 -march=native -fopenmp \
+      -DSTREAM_ARRAY_SIZE=80000000 \
+      -DNTIMES=20 \
+      -o $@ $<
 
 OBJS=$(OBJDIR)/main.o $(OBJDIR)/saxpySerial.o $(OBJDIR)/saxpy_ispc.o $(TASKSYS_OBJ)
 
@@ -37,4 +43,3 @@ $(OBJDIR)/main.o: $(OBJDIR)/$(APP_NAME)_ispc.h $(COMMONDIR)/CycleTimer.h
 
 $(OBJDIR)/%_ispc.h $(OBJDIR)//%_ispc.o: %.ispc
 		$(ISPC) $(ISPCFLAGS) $< -o $(OBJDIR)/$*_ispc.o -h $(OBJDIR)/$*_ispc.h
-
