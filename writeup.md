@@ -251,3 +251,37 @@ hardware changes to allow for more memory bandwidth.
 
 ## Problem 6
 
+Initial run of kmeans was about 82 seconds:
+
+```
+(.venv) [c0@work prog6_kmeans]$ ./kmeans
+Reading data.dat...
+Running K-means with: M=1000000, N=100, K=3, epsilon=0.100000
+[Total Time]: 81856.587 ms
+```
+
+I ran it under perf sampling profiler and generated the following flame graph:
+
+![](./prog6_kmeans/flamegraph.png)
+
+This shows that most of the time is spent in the `dist` function in
+`computeCost` and `computeAssignments`. `pow` was labeled as a minority
+contributor to the computation, but the majority was in libm, with unlabeled
+code, possibly inlined code. My initial thought was to inspect the optimized
+compiled output to see if the compiler already auto-vectorized the loop in
+`dist`. It did not. Vectorizing the `dist` function seemed to be a possible line
+of attack. I then decided to thread the cluster assignment since the code seemed
+to be already setup to do most of that. This required locking around shared
+mutable datastructures, and resulted in about a 1.9x speedup. I then looked
+again at the `dist` function and realized that `pow` was a library function that
+could easily be replaced with a multiply. Once I did that the runtime plummeted
+down to 2.53 seconds, a 32.35x speedup. Finally, I further threaded the cluster
+assignment function to increase parallelism at the cost of lock contention.
+Tuning that I got the runtime down to 1.87.
+
+- original: 81.86s
+- threading: 43.08s (1.9x speedup)
+- use multiply: 2.53s (17.03x speedup)
+- more threading: 1.87s (1.35x speedup)
+- **total speedup: 43.68x**
+- **total speedup from threading alone: 2.57x**
