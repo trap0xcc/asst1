@@ -18,12 +18,15 @@ TASKSYS_OBJ=$(addprefix $(OBJDIR)/, $(subst $(COMMONDIR)/,, $(TASKSYS_CXX:.cpp=.
 
 default: $(APP_NAME)
 
-.PHONY: dirs clean
+.PHONY: dirs clean clean-build
 
 dirs:
 		/bin/mkdir -p $(OBJDIR)/
 
-clean:
+clean: clean-build
+		/bin/rm -rf perf.data* __pycache__
+
+clean-build:
 		/bin/rm -rf $(OBJDIR) *.ppm *~ $(APP_NAME)
 
 OBJS=$(OBJDIR)/main.o $(OBJDIR)/mandelbrotSerial.o $(OBJDIR)/mandelbrot_ispc.o $(PPM_OBJ) $(TASKSYS_OBJ)

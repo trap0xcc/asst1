@@ -21,7 +21,7 @@ dirs:
 		/bin/mkdir -p $(OBJDIR)/
 
 clean:
-		/bin/rm -rf $(OBJDIR) *.ppm *.log *.png *~ $(APP_NAME)
+		/bin/rm -rf $(OBJDIR) *.ppm *.log *~ $(APP_NAME) perf.data* __pycache__
 
 OBJS=$(OBJDIR)/main.o $(OBJDIR)/kmeansThread.o $(OBJDIR)/utils.o $(PPM_OBJ) $(TASKSYS_OBJ)
 

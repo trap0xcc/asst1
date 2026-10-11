@@ -1,0 +1,27 @@
+# Local Python environment and caches
+.venv/
+__pycache__/
+*.py[cod]
+
+# Compiler and profiler output
+/prog*/objs/
+/prog*/*.o
+/prog*/perf.data*
+/prog*/*~
+
+# Program binaries
+/prog1_mandelbrot_threads/mandelbrot
+/prog2_vecintrin/myexp
+/prog2_vecintrin/test
+/prog3_mandelbrot_ispc/mandelbrot_ispc
+/prog4_sqrt/sqrt
+/prog5_saxpy/saxpy
+/prog5_saxpy/stream
+/prog6_kmeans/kmeans
+
+# Generated PPM images and logs
+/prog*/*.ppm
+/prog6_kmeans/*.log
+
+# Large k-means input dataset
+/prog6_kmeans/data.dat

@@ -12,5 +12,10 @@ myexp: CS149intrin.o logger.o main.cpp
 test: CS149intrin.o logger.o test.cpp
 	g++ $(CXXFLAGS) logger.o CS149intrin.o test.cpp -o test
 
-clean:
-	rm -f *.o myexp *~
+.PHONY: all clean clean-build
+
+clean: clean-build
+	rm -rf objs *.ppm perf.data* __pycache__
+
+clean-build:
+	rm -f *.o myexp test *~

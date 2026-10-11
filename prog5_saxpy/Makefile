@@ -20,7 +20,7 @@ dirs:
 		/bin/mkdir -p $(OBJDIR)/
 
 clean:
-		/bin/rm -rf $(OBJDIR) *.ppm *~ $(APP_NAME) stream
+		/bin/rm -rf $(OBJDIR) *.ppm *~ $(APP_NAME) stream perf.data* __pycache__
 
 stream: stream.c
 		$(CC) -O3 -march=native -fopenmp \
